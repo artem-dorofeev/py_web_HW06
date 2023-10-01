@@ -1,5 +1,4 @@
 from datetime import datetime, date, timedelta
-import faker
 from random import randint
 import sqlite3
 import pprint
@@ -36,11 +35,10 @@ def seed_teachers():
 
 
 def seed_disciplines():
-    list_teacher_id = [randint(1, NUMBER_TEACHERS)
-                       for _ in range(len(disciplines))]
     sql = "INSERT INTO disciplines(name, teacher_id) VALUES (?, ?);"
+    cursor.executemany(sql, zip(disciplines, iter(
+        randint(1, NUMBER_TEACHERS) for _ in range(len(disciplines)))))
     print("disciplines ok")
-    cursor.executemany(sql, zip(disciplines, list_teacher_id))
 
 
 def seed_groups():
@@ -51,11 +49,10 @@ def seed_groups():
 
 def seed_students():
     students = [fake.name() for _ in range(NUMBER_STUDENTS)]
-    list_group_id = [randint(1, len(groups))
-                     for _ in range(NUMBER_STUDENTS)]
     sql = "INSERT INTO students(fullname, group_id) VALUES (?, ?);"
     print("students ok")
-    cursor.executemany(sql, zip(students, list_group_id))
+    cursor.executemany(sql, zip(students, iter(
+        randint(1, len(groups)) for _ in range(len(students)))))
 
 
 def seed_grades():
